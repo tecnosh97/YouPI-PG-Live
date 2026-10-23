@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Placar | YouPI-PG</title>
+<!--
+  O QUADRO DE RANKING PRO OBS
+
+  Ponha como "Fonte de Navegador" no OBS, com fundo transparente:
+
+    http://localhost:8000/placar.html?tipo=moedas
+    http://localhost:8000/placar.html?tipo=curtidas
+    http://localhost:8000/placar.html?tipo=presenca
+
+  Use localhost, NUNCA 127.0.0.1: o navegador embutido do OBS trata os dois como
+  origens diferentes, e a metade dos problemas de "a fonte fica preta" e' isso.
+
+  O fundo e' transparente de proposito (sem background no body): assim o quadro
+  flutua por cima do gameplay em vez de tapar um pedaco da tela.
+-->
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font: 600 20px/1.35 "Segoe UI", system-ui, sans-serif;
+    color: #fff;
+    /* Sem background: o OBS mostra o que estiver atras. */
+    padding: 16px;
+  }
+  .quadro {
+    width: 340px;
+    background: rgba(10, 12, 18, 0.72);
+    border-radius: 14px;
+    padding: 14px 16px;
+    backdrop-filter: blur(6px);
+  }
+  h1 {
+    font-size: 15px; letter-spacing: 1.2px; text-transform: uppercase;
+    color: var(--cor, #ff2d6f); margin-bottom: 10px;
+  }
+  ol { list-style: none; }
+  li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  li:last-child { border-bottom: 0; }
+  .pos {
+    width: 26px; height: 26px; flex: none; border-radius: 50%;
+    background: rgba(255,255,255,0.1); color: #cbd5e1;
+    font-size: 13px; display: flex; align-items: center; justify-content: center;
+  }
+  li:nth-child(1) .pos { background: #fbbf24; color: #1a1a1a; }
+  li:nth-child(2) .pos { background: #cbd5e1; color: #1a1a1a; }
+  li:nth-child(3) .pos { background: #d97757; color: #1a1a1a; }
+  .nick {
+    flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  }
+  .pontos { color: var(--cor, #ff2d6f); font-variant-numeric: tabular-nums; }
+  .vazio { color: #8b95a7; font-size: 15px; font-weight: 400; padding: 6px 0; }
+</style>
+</head>
+<body>
+<div class="quadro" id="quadro">
+  <h1 id="titulo">Placar</h1>
+  <ol id="lista"><li class="vazio">esperando a live comecar...</li></ol>
+</div>
+
+<script>
+const TIPOS = {
+  moedas:   { titulo: "Top presentes",  cor: "#ff2d6f", sufixo: "" },
+  curtidas: { titulo: "Top curtidas",   cor: "#f472b6", sufixo: "" },
+  presenca: { titulo: "Mais presentes", cor: "#4ade80", sufixo: " pts" },
+};
+
+const tipo = new URLSearchParams(location.search).get("tipo") || "moedas";
+const info = TIPOS[tipo] || TIPOS.moedas;
+
+document.getElementById("titulo").textContent = info.titulo;
+document.documentElement.style.setProperty("--cor", info.cor);
+
+// Numero grande fica ilegivel de relance no video. 12.4K le'-se num piscar;
+// 12417 nao.
+function curto(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(".0", "") + "M";
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(".0", "") + "K";
+  return String(n);
+}
+
+async function atualizar() {
+  let dados;
+  try {
+    dados = await (await fetch("/placar")).json();
+  } catch (e) {
+    // Servidor mudo nao pode apagar o quadro: durante um soluco de rede, o
+    // ultimo placar bom na tela e' muito melhor que um quadro vazio no meio
+    // da transmissao.
+    return;
+  }
+  const lista = dados[tipo] || [];
+  const el = document.getElementById("lista");
+  if (!lista.length) {
+    el.innerHTML = '<li class="vazio">ninguem pontuou ainda</li>';
+    return;
+  }
+  el.innerHTML = lista.map((linha, i) => `
+    <li>
+      <span class="pos">${i + 1}</span>
+      <span class="nick">${String(linha.nick || "?")
+        .replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</span>
+      <span class="pontos">${curto(linha.pontos || 0)}${info.sufixo}</span>
+    </li>`).join("");
+}
+
+atualizar();
+setInterval(atualizar, 2000);
+</script>
+</body>
+</html>

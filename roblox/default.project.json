@@ -1,0 +1,138 @@
+{
+  "name": "live-interativa-Monster",
+  "globIgnorePaths": [
+    "**/*.md"
+  ],
+  "tree": {
+    "$className": "DataModel",
+    "Workspace": {
+      "$className": "Workspace",
+      "$ignoreUnknownInstances": true,
+      "$properties": {
+        "StreamingEnabled": false
+      },
+      "Cenario": {
+        "$path": "src/Workspace/Cenario.model.json"
+      },
+      "Camera": {
+        "$className": "Camera",
+        "$properties": {
+          "CFrame": [
+            0,
+            64,
+            215,
+            1,
+            0,
+            0,
+            0,
+            0.9798,
+            0.19996,
+            0,
+            -0.19996,
+            0.9798
+          ],
+          "FieldOfView": 70
+        }
+      }
+    },
+    "Lighting": {
+      "$className": "Lighting",
+      "$ignoreUnknownInstances": true,
+      "$properties": {
+        "Technology": "Future",
+        "Brightness": 2.2,
+        "ClockTime": 14.5,
+        "GeographicLatitude": -8,
+        "Ambient": [
+          0.58,
+          0.58,
+          0.61
+        ],
+        "OutdoorAmbient": [
+          0.58,
+          0.58,
+          0.61
+        ],
+        "GlobalShadows": true,
+        "EnvironmentDiffuseScale": 0.55,
+        "EnvironmentSpecularScale": 0.4,
+        "ExposureCompensation": 0.0,
+        "ShadowSoftness": 0.6
+      },
+      "Ar": {
+        "$className": "Atmosphere",
+        "$properties": {
+          "Density": 0.06,
+          "Offset": 0.1,
+          "Color": [
+            0.8,
+            0.81,
+            0.86
+          ],
+          "Decay": [
+            0.72,
+            0.74,
+            0.8
+          ],
+          "Glare": 0.0,
+          "Haze": 0.4
+        }
+      },
+      "Brilho": {
+        "$className": "BloomEffect",
+        "$properties": {
+          "Intensity": 0.12,
+          "Size": 20,
+          "Threshold": 2.2
+        }
+      },
+      "Cores": {
+        "$className": "ColorCorrectionEffect",
+        "$properties": {
+          "Saturation": 0.08,
+          "Contrast": 0.04,
+          "Brightness": 0.0,
+          "TintColor": [
+            1.0,
+            0.995,
+            0.99
+          ]
+        }
+      },
+      "Nitidez": {
+        "$className": "DepthOfFieldEffect",
+        "$properties": {
+          "FarIntensity": 0.06,
+          "FocusDistance": 22.0,
+          "InFocusRadius": 120.0,
+          "NearIntensity": 0.0
+        }
+      }
+    },
+    "HttpService": {
+      "$className": "HttpService",
+      "$properties": {
+        "HttpEnabled": true
+      }
+    },
+    "SoundService": {
+      "$className": "SoundService",
+      "$properties": {
+        "AmbientReverb": "ConcertHall"
+      }
+    },
+    "ReplicatedStorage": {
+      "$path": "src/ReplicatedStorage"
+    },
+    "ServerScriptService": {
+      "$path": "src/ServerScriptService"
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "$path": "src/StarterPlayerScripts"
+      }
+    }
+  }
+}

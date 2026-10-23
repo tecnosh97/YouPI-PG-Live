@@ -1,0 +1,5 @@
+# bytes exatos: o jogo montado nao admite conversao de fim de linha
+JOGO-DA-LIVE.rbxlx -text
+*.rbxlx -text
+*.rbxl -text
+*.rbxm -text

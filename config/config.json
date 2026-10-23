@@ -1,0 +1,18 @@
+{
+  "server": {"host": "127.0.0.1", "port": 5000},
+  "tiktok": {"username": "@castanheira844@", "enabled": true},
+  "game": {
+    "comment_spawn": true,
+    "max_queue": 500,
+    "gift_rules": {
+      "rose": {"effect": "spawn", "scale": 1.0, "count": 1},
+      "rosa": {"effect": "spawn", "scale": 1.0, "count": 1},
+      "doughnut": {"effect": "spawn", "scale": 2.0, "count": 1},
+      "donut": {"effect": "spawn", "scale": 2.0, "count": 1},
+      "sunglasses": {"effect": "spawn", "scale": 3.0, "count": 1},
+      "oculos": {"effect": "spawn", "scale": 3.0, "count": 1},
+      "galaxy": {"effect": "spawn", "scale": 5.0, "count": 1},
+      "galaxia": {"effect": "spawn", "scale": 5.0, "count": 1}
+    }
+  }
+}

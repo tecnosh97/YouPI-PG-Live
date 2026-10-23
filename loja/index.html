@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YouPI-PG — Licença</title>
+<meta name="description" content="Licença mensal do YouPI-PG: a live interativa que transforma o TikTok em Roblox.">
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     A LOJA DA LICENÇA (PIX)
+
+     O que acontece aqui, do começo ao fim:
+
+       1. a pessoa escreve o e-mail e clica em pagar
+       2. o app KEY cria o pedido no provedor de PIX
+       3. a pessoa e' levada para o checkout do provedor e paga no PIX
+          (app do banco, como qualquer PIX)
+       4. o provedor confirma e chama o WEBHOOK do app KEY
+       5. o app KEY gera a chave, assina o manifesto e publica no GitHub
+       6. a pessoa recebe a chave no WhatsApp, com o código de ativação
+       7. a pessoa cola os dois no config\licenca.json do app — e o
+          conteúdo extra (as danças de presente e as cenas) aparece
+
+     A PÁGINA NÃO CONSEGUE GERAR CHAVE NEM SABE O QUE É CHAVE. Ela só
+     pede o pedido. A chave é gerada do outro lado, pelo app KEY, que é
+     quem assina o manifesto.
+
+     ─────────────────────────────────────────────────────────────────
+     O QUE MUDAR AQUI
+     ─────────────────────────────────────────────────────────────────
+       · https://tecnosh97.github.io/YouPI-SITE     o endereço público desta loja (é onde o app KEY
+                          escuta: a loja, o pedido e o webhook moram no
+                          mesmo lugar, no mesmo endereço)
+       · 29.90        o valor
+       · BRL        BRL
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<style>
+  :root {
+    --fundo: #0b0d13;
+    --caixa: #151823;
+    --borda: #242938;
+    --texto: #eef1f8;
+    --fraco: #8b93a7;
+    --acento: #ff2d6f;
+    --ok: #4ade80;
+    --erro: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px 20px 64px;
+    background: radial-gradient(1200px 600px at 50% -10%, #1c1220, var(--fundo));
+    color: var(--texto);
+    font: 16px/1.6 "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+  .volta { display: block; max-width: 560px; margin: 0 auto 28px; color: var(--fraco); text-decoration: none; font-size: 14px; }
+  .volta:hover { color: var(--texto); }
+  .caixa {
+    max-width: 560px; margin: 0 auto; background: var(--caixa);
+    border: 1px solid var(--borda); border-radius: 16px; padding: 28px;
+  }
+  .marca { font-weight: 800; letter-spacing: .4px; color: var(--acento); }
+  h1 { font-size: 26px; margin: 6px 0 4px; }
+  .sub { color: var(--fraco); margin: 0 0 22px; }
+  .preco { font-size: 40px; font-weight: 800; margin: 18px 0 2px; letter-spacing: -1px; }
+  .preco span { font-size: 16px; font-weight: 600; color: var(--fraco); letter-spacing: 0; }
+  .o-que { list-style: none; padding: 0; margin: 20px 0 24px; }
+  .o-que li { padding: 9px 0 9px 26px; position: relative; border-bottom: 1px solid #1c2130; }
+  .o-que li::before { content: "✓"; position: absolute; left: 0; color: var(--acento); font-weight: 800; }
+  .o-que li small { display: block; color: var(--fraco); font-size: 14px; }
+  label { display: block; font-size: 13px; color: var(--fraco); margin: 0 0 6px; font-weight: 600; }
+  input[type=email] {
+    width: 100%; background: #0e1017; color: var(--texto);
+    border: 1px solid var(--borda); border-radius: 10px;
+    padding: 12px 14px; font: inherit; margin-bottom: 14px;
+  }
+  input[type=email]:focus { outline: none; border-color: var(--acento); }
+  button {
+    width: 100%; background: var(--acento); color: #fff; border: 0;
+    border-radius: 10px; padding: 14px; font: inherit; font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  button:disabled { opacity: .55; cursor: default; }
+  .recado { margin-top: 14px; font-size: 14px; min-height: 22px; }
+  .recado.ok { color: var(--ok); }
+  .recado.erro { color: var(--erro); }
+  .nota { color: var(--fraco); font-size: 13px; margin-top: 22px; border-top: 1px solid #1c2130; padding-top: 18px; }
+  .passos { counter-reset: p; list-style: none; padding: 0; margin: 18px 0 0; }
+  .passos li { counter-increment: p; padding: 7px 0 7px 30px; position: relative; color: var(--fraco); font-size: 14px; }
+  .passos li::before {
+    content: counter(p); position: absolute; left: 0; top: 7px;
+    width: 20px; height: 20px; border-radius: 50%; background: #1e2333;
+    color: var(--texto); font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── o painel do PIX ── */
+  .pixbox { margin-top: 22px; padding: 20px; border: 1px solid #1c2130;
+            border-radius: 12px; background: #0d1018; text-align: center; }
+  .pixbox[hidden] { display: none; }
+  .pix-titulo { font-weight: 700; margin-bottom: 14px; }
+  .pix-qr { width: 240px; height: 240px; background: #fff; padding: 10px;
+            border-radius: 10px; }
+  .pix-ou { color: var(--fraco); font-size: 13px; margin: 14px 0 8px; }
+  .pix-codigo { width: 100%; box-sizing: border-box; background: #090c12;
+                color: var(--fraco); border: 1px solid #1c2130; border-radius: 8px;
+                padding: 9px; font-family: ui-monospace, Menlo, Consolas, monospace;
+                font-size: 11px; resize: none; }
+  .pix-copiar { margin-top: 10px; width: 100%; background: #1e2333;
+                color: var(--texto); border: 1px solid #2b3145; padding: 11px;
+                border-radius: 9px; font-weight: 600; cursor: pointer; }
+  .pix-copiar:hover { background: #262c3d; }
+  .pix-link { display: inline-block; margin-top: 10px; color: var(--fraco);
+              font-size: 13px; }
+  .pix-espera { margin-top: 16px; color: var(--fraco); font-size: 13px;
+                line-height: 1.55; }
+  .pix-espera.pago { color: var(--ok); }
+
+  /* ── o bloco da entrega (a chave nasce AQUI, na hora do verde) ── */
+  .entregue { margin-top: 22px; background: #0d1f16;
+              border: 1px solid #1d5c3a; border-radius: 14px;
+              padding: 22px; }
+  .entregue-ola { font-size: 16px; font-weight: 700; color: var(--ok); }
+  .entregue-boa { color: var(--texto); font-size: 14px; margin: 6px 0 0; }
+  .entregue-rotulo { margin: 18px 0 6px; color: var(--fraco);
+                     font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+  .entregue-produto { color: var(--texto); font-weight: 600; }
+  .entregue-cod { display: flex; align-items: center; gap: 8px;
+                  margin-top: 10px; }
+  .entregue-cod .rot { width: 72px; flex: none; color: var(--fraco);
+                       font-size: 13px; }
+  .entregue-cod code { flex: 1; min-width: 0; background: #07130d;
+                       border: 1px solid #1d5c3a; border-radius: 8px;
+                       padding: 9px 10px; color: var(--ok);
+                       font-size: 12px; word-break: break-all; }
+  .entregue-copiar { flex: none; background: #123524; color: var(--ok);
+                     border: 1px solid #1d5c3a; border-radius: 8px;
+                     padding: 7px 12px; font-size: 12px; font-weight: 600;
+                     cursor: pointer; }
+  .entregue-copiar:hover { background: #175234; }
+  .entregue-passos { margin: 6px 0 0; padding-left: 20px; color: var(--fraco);
+                     font-size: 14px; line-height: 1.65; }
+  .entregue-passos li { margin: 8px 0; }
+  .entregue-passos b, .entregue-passos code { color: var(--texto); }
+  .entregue-passos a { color: var(--ok); }
+  .entregue-painel { display: inline-block; margin-top: 10px;
+                     background: #123524; color: var(--ok);
+                     border: 1px solid #1d5c3a; border-radius: 10px;
+                     padding: 10px 16px; font-size: 13px; font-weight: 700;
+                     text-decoration: none; }
+  .entregue-painel:hover { background: #175234; }
+  .entregue-nota { margin: 14px 0 0; color: var(--fraco); font-size: 13px;
+                   line-height: 1.55; }
+  .entregue-nota b { color: var(--texto); }
+</style>
+</head>
+<body>
+
+<a class="volta" href="../README.md">&larr; Voltar</a>
+
+<div class="caixa">
+  <div class="marca">YouPI-PG</div>
+  <h1>Licença mensal</h1>
+  <p class="sub">A live interativa que transforma o TikTok em Roblox — com as danças de presente e as cenas coloridas.</p>
+
+  <div class="preco">29.90 <span>BRL / mês</span></div>
+  <p class="sub" style="margin:0">Renove quando quiser. Sem pegadinha de contrato.</p>
+
+  <ul class="o-que">
+    <li>As danças de presente com animação própria
+      <small>Rosquinha, Óculos e Galáxia — a parte que faz o presente ser visto de longe.</small></li>
+    <li>As seis cenas do cenário
+      <small>Neon, Matrix, Pôr do sol, Gelo, Carvão e Padrão — trocadas no ar, sem reiniciar nada.</small></li>
+    <li>Atualização automática
+      <small>O app se conserta sozinho. Você não baixa nada.</small></li>
+    <li>A ponte, a câmera, a aura e os overlays
+      <small>Tudo isso funciona mesmo sem licença — a licença é o extra.</small></li>
+  </ul>
+
+  <label for="email">Seu e-mail — é para onde a sua chave vai</label>
+  <input type="email" id="email" placeholder="voce@email.com" autocomplete="email" required>
+
+  <button id="pagar">Pagar no PIX e receber a chave</button>
+  <div class="recado" id="recado"></div>
+
+  <div id="pixbox" class="pixbox" hidden>
+    <div class="pix-titulo">Escaneie com o app do seu banco</div>
+    <img id="pixqr" alt="QR code do PIX" class="pix-qr">
+    <div class="pix-ou">ou copie o código</div>
+    <textarea id="pixcodigo" class="pix-codigo" readonly rows="3"
+              onclick="this.select()"></textarea>
+    <button id="pixcopiar" class="pix-copiar">Copiar o código PIX</button>
+    <a id="pixlink" class="pix-link" href="#" target="_blank"
+       rel="noopener">Abrir no Mercado Pago</a>
+    <div class="pix-espera" id="pixespera">
+      Aguardando o pagamento… assim que cair, os <b style="color:var(--texto)">
+      dois códigos</b> aparecem aqui embaixo.
+    </div>
+  </div>
+
+  <!-- ══════════ A ENTREGA AUTOMÁTICA ══════════
+       Quando o pagamento cai, o webhook gera a chave e o manifesto sobe
+       para o GitHub. A loja pergunta o /pedido/{id}/chave e recebe os
+       dois códigos — o comprador NUNCA depende de vendedor acordado:
+       a loja entrega sozinha, na hora, dia ou noite. -->
+  <div id="entregue" class="entregue" hidden>
+    <div class="entregue-ola">Olá, <b id="ent_email"></b>!</div>
+    <div class="entregue-boa">Seu pagamento foi confirmado e o seu acesso
+      está liberado.</div>
+
+    <div class="entregue-rotulo">O QUE VOCÊ COMPROU</div>
+    <div class="entregue-produto">YouPI-PG-Live — conteúdo extra da live
+      (licença mensal)</div>
+
+    <div class="entregue-cod">
+      <span class="rot">licença</span>
+      <code id="ent_codigo"></code>
+      <button id="ent_copiar1" class="entregue-copiar" type="button">Copiar</button>
+    </div>
+    <div class="entregue-cod">
+      <span class="rot">ativação</span>
+      <code id="ent_ativacao"></code>
+      <button id="ent_copiar2" class="entregue-copiar" type="button">Copiar</button>
+    </div>
+
+    <div class="entregue-rotulo">COMO ABRIR O JOGO</div>
+    <ol class="entregue-passos">
+      <li>Baixe o programa:
+        <a href="https://github.com/tecnosh97/YouPI-PG-Live"
+           target="_blank" rel="noopener">github.com/tecnosh97/YouPI-PG-Live</a>
+        — botão verde <b>Code</b>, depois <b>Download ZIP</b>.</li>
+      <li>Descompacte a pasta <b>INTEIRA</b> (botão direito no .zip →
+        Extrair tudo) e deixe parada num lugar fixo do computador
+        (Documentos, Área de trabalho…).</li>
+      <li>Abra o <code>1-INSTALACAO.bat</code> de dentro dela e espere
+        terminar (é rápido).</li>
+      <li>Abra o <code>2-COMECAR-LIVE-TIKTOK.bat</code>. No painel que
+        abrir, cole os <b>dois códigos</b> na seção <b>Licença</b> e clique
+        <b>Liberar</b>. Ou clique neste botão — ele já leva os códigos
+        preenchidos:
+        <a id="ent_painel" class="entregue-painel" href="#"
+           target="_blank" rel="noopener">Abrir o painel com os códigos</a></li>
+    </ol>
+    <p class="entregue-nota">Se o Windows abrir um bloco de notas cheio de
+      texto em vez de rodar o .bat, clique com o <b>BOTÃO DIREITO</b> no
+      arquivo, escolha <b>Abrir com</b> e depois
+      <b>Processador de Comandos do Windows</b>.</p>
+    <p class="entregue-nota"><b>Guarde esta página</b> — ela é o seu
+      comprovante. (Aperte Ctrl+P e salve em PDF, se quiser.) A compra
+      também fica registrada no e-mail <b id="ent_email2"></b>.</p>
+  </div>
+
+  <div class="nota">
+    <strong style="color:var(--texto)">Como funciona</strong>
+    <ol class="passos">
+      <li>Você paga por aqui, no PIX (app do banco, igual qualquer compra).</li>
+      <li>A gente te manda a <b>chave</b> e o <b>código de ativação</b>, em
+        mensagens separadas (o segundo existe para a sua chave não virar
+        na mão de outra pessoa).</li>
+      <li>Abra o <a href="http://localhost:8000/painel">painel do
+        programa</a> (no computador onde o app está instalado) e cole
+        os dois na seção <b>Licença</b>. Se você preferir mexer no
+        arquivo, eles também entram no <code>config\licenca.json</code>.</li>
+      <li>Em até 5 segundos, o app busca a lista de licenças e o conteúdo
+        extra aparece.</li>
+    </ol>
+    <p style="margin-bottom:0">Sem licença, a live funciona normal — só
+      não tem as danças de presente nem as cenas. A licença não derruba
+      nada, ela liga o extra.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var btn = document.getElementById('pagar');
+  var email = document.getElementById('email');
+  var recado = document.getElementById('recado');
+  var LOJA = 'https://tecnosh97.github.io/YouPI-SITE';
+
+  var pixbox = document.getElementById('pixbox');
+  var pixqr = document.getElementById('pixqr');
+  var pixcodigo = document.getElementById('pixcodigo');
+  var pixcopiar = document.getElementById('pixcopiar');
+  var pixlink = document.getElementById('pixlink');
+  var pixespera = document.getElementById('pixespera');
+
+  var entregue = document.getElementById('entregue');
+  var ent_email = document.getElementById('ent_email');
+  var ent_email2 = document.getElementById('ent_email2');
+  var ent_codigo = document.getElementById('ent_codigo');
+  var ent_ativacao = document.getElementById('ent_ativacao');
+  var ent_painel = document.getElementById('ent_painel');
+
+  // O pedido vive no navegador do comprador: e o comprovante dele. Com
+  // ele, a loja mostra os codigos de novo em qualquer visita posterior,
+  // mesmo depois de fechar a pagina. (48 bits aleatorios — sem ele,
+  // ninguem le chave de ninguem.)
+  function guardarPedido(pedido) {
+    try { localStorage.setItem('youpi-pedido', pedido); } catch (e) {}
+  }
+  function pedidoGuardado() {
+    try { return localStorage.getItem('youpi-pedido') || ''; }
+    catch (e) { return ''; }
+  }
+
+  //[[ ONDE A LOJA ESTA AGORA
+  //
+  //   A loja embutida no programa aponta para o endereco que estava valido
+  //   quando o programa foi publicado. O endereco publico muda quando o
+  //   tunel reinicia — e a loja ficaria apontando para um endereco morto.
+  //
+  //   O app KEY publica um arquivo minusculo no repositorio do programa
+  //   (`loja/onde.json`) dizendo onde ele esta AGORA. A loja pergunta por
+  //   ele e se corrige sozinha. Se a pergunta falhar, fica com o
+  //   endereco embutido — que e' o de sempre. ]]
+  function lerOnde(tentativas) {
+    fetch('https://raw.githubusercontent.com/tecnosh97/YouPI-PG-Live/main/' +
+          'loja/onde.json?v=' + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.url) {
+          LOJA = String(d.url).replace(/\/+$/, '');
+          var l = document.querySelectorAll('[data-loja]');
+          for (var i = 0; i < l.length; i++) { l[i].textContent = LOJA; }
+        }
+      })
+      .catch(function () {
+        // O GitHub (ou a internet do cliente) falhou em responder. O
+        // endereco embutido pode nao estar mais de pe, entao vale
+        // insistir um pouco antes de desistir.
+        if (tentativas > 0) {
+          setTimeout(function () { lerOnde(tentativas - 1); }, 4000);
+        }
+      });
+  }
+
+  if (LOJA) { lerOnde(4); }
+
+  function aviso(texto, classe) {
+    recado.textContent = texto;
+    recado.className = 'recado ' + (classe || '');
+  }
+
+  // Fica de olho no pedido ate o aviso do provedor chegar. O aviso roda
+  // em OUTRO processo (o webhook), entao a loja so pode perguntar.
+  function esperar(pedido, tentativas) {
+    if (tentativas <= 0) { return; }
+    fetch(LOJA + '/pedido/' + encodeURIComponent(pedido))
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.pago) {
+          pixespera.className = 'pix-espera pago';
+          pixespera.textContent =
+            'Pagamento confirmado! Pegando os seus códigos…';
+          buscarChaves(pedido, 40);
+          return;
+        }
+        setTimeout(function () { esperar(pedido, tentativas - 1); }, 5000);
+      })
+      .catch(function () {
+        setTimeout(function () { esperar(pedido, tentativas - 1); }, 8000);
+      });
+  }
+
+  // O pagamento caiu. A chave nessa hora pode demorar alguns segundos
+  // (gera, assina o manifesto e publica) — pergunta a cada 6s, com
+  // paciencia, ate o bloco verde acender.
+  function buscarChaves(pedido, tentativas) {
+    if (tentativas <= 0) {
+      pixespera.className = 'pix-espera pago';
+      pixespera.textContent = 'Pagamento confirmado. Recarregue esta página ' +
+        'em um minuto para ver os seus códigos.';
+      return;
+    }
+    fetch(LOJA + '/pedido/' + encodeURIComponent(pedido) + '/chave')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.pago && d.codigo) { mostrarEntrega(d); return; }
+        setTimeout(function () { buscarChaves(pedido, tentativas - 1); },
+                   6000);
+      })
+      .catch(function () {
+        setTimeout(function () { buscarChaves(pedido, tentativas - 1); },
+                   8000);
+      });
+  }
+
+  function mostrarEntrega(d) {
+    var fim = String(d.email || '');
+    ent_email.textContent = fim;
+    ent_email2.textContent = fim || 'sua conta';
+    ent_codigo.textContent = String(d.codigo || '');
+    ent_ativacao.textContent = String(d.ativacao || '');
+    ent_painel.href = 'http://localhost:8000/painel?chave=' +
+      encodeURIComponent(d.codigo || '') +
+      '&ativacao=' + encodeURIComponent(d.ativacao || '');
+    entregue.hidden = false;
+    entregue.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function copiar(botao, fonte) {
+    botao.addEventListener('click', function () {
+      var c = fonte.textContent || '';
+      if (!c) { return; }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(c).then(function () {
+          botao.textContent = 'Copiado!';
+        });
+      } else {
+        var faixa = document.createRange();
+        faixa.selectNodeContents(fonte);
+        var sel = window.getSelection();
+        sel.removeAllRanges(); sel.addRange(faixa);
+        document.execCommand('copy');
+        botao.textContent = 'Copiado!';
+      }
+    });
+  }
+  copiar(document.getElementById('ent_copiar1'), ent_codigo);
+  copiar(document.getElementById('ent_copiar2'), ent_ativacao);
+
+  // Comprador de antes que voltou: se os codigos dele ja existem,
+  // acende o bloco verde de novo — a loja guarda o comprovante dele.
+  (function () {
+    var guardado = pedidoGuardado();
+    if (!guardado) { return; }
+    fetch(LOJA + '/pedido/' + encodeURIComponent(guardado) + '/chave')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.pago && d.codigo) { mostrarEntrega(d); }
+      })
+      .catch(function () {});
+  })();
+
+  pixcopiar.addEventListener('click', function () {
+    var c = pixcodigo.value || '';
+    if (!c) { return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(c).then(function () {
+        pixcopiar.textContent = 'Copiado!';
+      });
+    } else {
+      pixcodigo.focus();
+      pixcodigo.select();
+      document.execCommand('copy');
+      pixcopiar.textContent = 'Copiado!';
+    }
+  });
+
+  btn.addEventListener('click', function () {
+    var end = email.value.trim();
+    if (!end || end.indexOf('@') < 0) {
+      aviso('Coloque um e-mail válido — é para lá que a chave vai.', 'erro');
+      return;
+    }
+
+    btn.disabled = true;
+    aviso('Criando o pagamento...');
+
+    fetch(LOJA + '/pedido', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: end, produto: 'YouPI-PG — Licença mensal' })
+    })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok || !res.d.checkout_url) {
+          throw new Error((res.d && res.d.erro) || 'nao consegui criar o pagamento');
+        }
+
+        // O QR vem junto do pedido. Se o provedor mandou, o cliente ve
+        // o codigo AQUI, com a marca do YouPI-PG em volta. Se nao veio
+        // (o provedor pode mudar o formato), o cliente vai para a pagina
+        // do provedor — que tambem funciona.
+        if (res.d.qr_base64 || res.d.qr_code) {
+          if (res.d.qr_base64) {
+            pixqr.src = 'data:image/png;base64,' + res.d.qr_base64;
+            pixqr.hidden = false;
+          } else {
+            pixqr.hidden = true;
+          }
+          pixcodigo.value = res.d.qr_code || '';
+          pixlink.href = res.d.checkout_url;
+          pixbox.hidden = false;
+          aviso('Pagamento criado. Escaneie o codigo abaixo.', 'ok');
+          pixbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          guardarPedido(res.d.order_id);
+          esperar(res.d.order_id, 90);
+          return;
+        }
+
+        aviso('Levando você para o pagamento...');
+        window.location.href = res.d.checkout_url;
+      })
+      .catch(function (e) {
+        aviso(e.message || 'deu erro ao criar o pagamento.', 'erro');
+        btn.disabled = false;
+      });
+  });
+})();
+</script>
+</body>
+</html>

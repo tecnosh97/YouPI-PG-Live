@@ -1,0 +1,50 @@
+# O QUE NÃO VAI PARA O GITHUB
+#
+# Regra deste repositório: o que é do VENDEDOR fica fora; o que é estado
+# da máquina fica fora; o que o instalador baixa/reconstrói fica fora.
+# O upload pela web NÃO respeita este arquivo — ele vale para commits e
+# para o empacotador, que também usa estas regras.
+
+# ─── a licença do dono da máquina (os códigos são pessoais) ───
+config/licenca.json
+
+# ─── estado e cache de sessão ───
+config/licenca-cache.json
+config/ponte-no-ar.flag
+config/ultimo-usuario.txt
+config/licencas_*.json
+config/licenca-admin.txt
+config/licenca-secreto.txt
+config/licenca-protegido.json
+config/licenca-auditoria.log
+.liberado
+
+# ─── logs (contêm quem comentou na live) ───
+*.log
+
+# ─── bytecode e venv ───
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# ─── montagem (o rojo remonta o jogo a cada arranque) ───
+*.rbxlx
+*.rbxl
+
+# ─── binários grandes que o instalador baixa ───
+ferramentas/rojo
+ferramentas/luau.exe
+
+# ─── arquivos grandes que não são do produto ───
+*.mp4
+rojo-*.zip
+*.rar
+
+# ─── sistema ───
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
